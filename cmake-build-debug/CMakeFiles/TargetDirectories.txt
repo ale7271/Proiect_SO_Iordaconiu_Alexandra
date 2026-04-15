@@ -1,0 +1,3 @@
+/home/student/ALE_SO/phase1/cmake-build-debug/CMakeFiles/phase1.dir
+/home/student/ALE_SO/phase1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/student/ALE_SO/phase1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
