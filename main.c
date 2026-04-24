@@ -1,10 +1,3 @@
-#include <stdio.h>
-<<<<<<< HEAD
-
-int main(void) {
-    printf("Hello, World!\n");
-    return 0;
-=======
 #include <sys/stat.h>
 #include<unistd.h>
 #include <sys/types.h>
@@ -13,6 +6,7 @@ int main(void) {
 #include <fcntl.h>
 #include <stdlib.h>
 #include <time.h>
+#include<stdio.h>
 #define NUME 50
 #define CATEGORIE 30
 #define DESCRIERE 100
@@ -552,9 +546,4 @@ int main(int argc, char *argv[]) {
         }
         filter(district,argc,argv);
     }
-<<<<<<< HEAD
->>>>>>> bbdeeed (functie add,list si view)
-=======
-    return 0;
->>>>>>> 2d6caad (Faza 1-functii complete)
 }
