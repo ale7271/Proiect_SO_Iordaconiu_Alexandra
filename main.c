@@ -81,11 +81,11 @@ void create(const char *district)
             unlink(link_name);
             symlink(path,link_name);
         }
+    }
         else {
             symlink(path,link_name);
         }
     }
-}
 
 
 void add_report (const char *district, const char *user)
@@ -546,4 +546,5 @@ int main(int argc, char *argv[]) {
         }
         filter(district,argc,argv);
     }
+    return 0;
 }
