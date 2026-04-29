@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include<stdio.h>
+#include<sys/wait.h>
 #define NUME 50
 #define CATEGORIE 30
 #define DESCRIERE 100
@@ -445,6 +446,26 @@ void filter(const char *district,int argc,char *argv[]) {
     close(f);
 }
 
+void remove_district(const char *district) {
+    char link_name[LINK];
+    snprintf(link_name, sizeof(link_name),"%s/reports.dat",district);
+    unlink(link_name);
+    pid_t pid=fork();
+    if (pid<0) {
+        perror("Eroare fork\n");
+        exit(1);
+    }
+    if (pid==0) {
+        execlp("rm","rm","-rf",district,NULL);
+        perror("Exec a esuat");
+        exit(1);
+    }
+    wait(NULL);
+    printf("District %s removed \n",district);
+
+}
+
+
 int main(int argc, char *argv[]) {
     if (argc<7) {
         perror("Argumente insuficiente");
@@ -545,6 +566,12 @@ int main(int argc, char *argv[]) {
             add_logged_district(district,user,role,"filter");
         }
         filter(district,argc,argv);
+    }else if (strcmp(command, "--remove_district") == 0) {
+        if ( strcmp(role,"manager") !=0) {
+            perror("Manager role only");
+            exit(1);
+        }
+        remove_district(district);
     }
     return 0;
 }
