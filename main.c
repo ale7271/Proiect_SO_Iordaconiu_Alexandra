@@ -8,12 +8,13 @@
 #include <time.h>
 #include<stdio.h>
 #include<sys/wait.h>
+#include<signal.h>
 #define NUME 50
 #define CATEGORIE 30
 #define DESCRIERE 100
 #define PATH 256
 #define LINK 200
-#define LOG 100
+#define LOG 200
 
 typedef struct {
     float latitude;
@@ -448,11 +449,11 @@ void filter(const char *district,int argc,char *argv[]) {
 
 void remove_district(const char *district) {
     char link_name[LINK];
-    snprintf(link_name, sizeof(link_name),"%s/reports.dat",district);
+    snprintf(link_name,sizeof(link_name),"active_reports-%s",district);
     unlink(link_name);
     pid_t pid=fork();
     if (pid<0) {
-        perror("Eroare fork\n");
+        perror("Eroare fork");
         exit(1);
     }
     if (pid==0) {
@@ -463,6 +464,24 @@ void remove_district(const char *district) {
     wait(NULL);
     printf("District %s removed \n",district);
 
+}
+
+
+int comunicare_monitor() {
+    int fin=open(".monitor_pid",O_RDONLY);
+    if (fin==-1) {
+        perror("Monitorul nu este pornit.");
+        return 0;
+    }
+    char string_pid[20];
+    int nr=read(fin,string_pid,sizeof(string_pid));
+    close(fin);
+    if (nr>0) {
+        pid_t pid=atoi(string_pid);
+        if (kill(pid,SIGUSR1)==0)
+            return 1;
+    }
+    return 0;
 }
 
 
@@ -498,7 +517,15 @@ int main(int argc, char *argv[]) {
         }
 
         add_report(district, user);
-        add_logged_district(district, user, role, "add");
+        int ok=comunicare_monitor();
+        char log_action[LOG];
+        if (ok==1) {
+            snprintf(log_action, sizeof(log_action), "add- Monitor notificat cu succes ");
+        }
+        else {
+            snprintf(log_action, sizeof(log_action), "add- EROARE: Monitorul nu a putut fi informat");
+        }
+        add_logged_district(district, user, role, log_action);
     } else if (strcmp(command, "--list") == 0) {
         if (!check_permission(path_reports, role, 'r')) {
             printf("Eroare: %s nu are drept de citire\n", role);
@@ -509,7 +536,7 @@ int main(int argc, char *argv[]) {
 
     } else if (strcmp(command, "--view") == 0) {
         if (argc < 8) {
-            printf("--view necesita un <report_id>.\n");
+            printf("--view necesita un report_id.\n");
             return 1;
         }
         if (!check_permission(path_reports, role, 'r')) {
@@ -522,11 +549,11 @@ int main(int argc, char *argv[]) {
     }else if (strcmp(command,"--update_threshold")==0) {
 
             if ( strcmp(role,"manager") !=0) {
-                fprintf(stderr, "Error: only manager can update threshold\n");
+                perror("Error: only manager can update threshold\n");
                 exit(1);
             }
             if (argc<8) {
-                printf("Command %s should contain value of the new threshold.\n",command);
+                printf("--update_threshold trebuie sa primeasca noua valoare ca parametru\n");
                 exit(1);
             }
             if (!check_permission(path_cfg, role, 'w')) {
@@ -537,11 +564,11 @@ int main(int argc, char *argv[]) {
             add_logged_district(district,user,role,"update_threshold");
         }else if (strcmp(command, "--remove_report") == 0) {
             if ( strcmp(role,"manager") !=0) {
-                fprintf(stderr, "Error: only manager role\n");
+                perror("Error: only manager can remove_report.\n");
                 exit(1);
             }
             if (argc < 8) {
-                printf("--remove_report necesita un id <raport_id>.\n");
+                printf("--remove_report necesita un id.\n");
                 return 1;
             }
             if (!check_permission(path_reports, role, 'w')) {
@@ -555,7 +582,7 @@ int main(int argc, char *argv[]) {
 
     }else if (strcmp(command,"--filter") == 0) {
         if (argc < 8) {
-            printf("date insuficiente pentru operatia de filter\n");
+            printf("Date insuficiente pentru operatia de filter\n");
             return 1;
         }
         if (!check_permission(path_reports, role, 'r')) {
@@ -568,7 +595,7 @@ int main(int argc, char *argv[]) {
         filter(district,argc,argv);
     }else if (strcmp(command, "--remove_district") == 0) {
         if ( strcmp(role,"manager") !=0) {
-            perror("Manager role only");
+            perror("Error:only manager can remove_district");
             exit(1);
         }
         remove_district(district);
