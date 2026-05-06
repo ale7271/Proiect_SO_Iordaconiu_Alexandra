@@ -1,3 +1,6 @@
+Phase 1
+-
+
 Pentru aceasta etapa a proiectului, am folosit Gemini Pro(Google) 
 2. Prompturi pentru AI
 
@@ -31,3 +34,20 @@ AI-ul a interpretat gresit numele variabilei pentru inspector  (ex: r->inspector
 5. Ce am invatat
 
 Am invatat de ce AI-ul a facut cast la (time_t)atoll(value) pentru parsarea timpului. Deoarece time_t este pe 64 de biti, utilizarea unui simplu atoi() ar fi trunchiat imestamp..
+
+Phase 2
+-
+Instrument folosit:Gemini
+
+In această etapa am folosit AI-ul pentru asistenta la debugging, când incercam sa integrez procesul monitor_reports cu programul principal city_manager.
+
+2. Utilizare
+
+Am folosit AI deoarece am primit eroare legate de fisiere de complilare deoarece aveam 2 main_uri.
+
+3. Prompturi pentru AI
+
+Am oferit AI-ului logica mea de cod și mesajele de eroare exacte primite în terminalul de Linux.
+
+4. Ce am modificat 
+Pentru a rula programul complet trebuie rulate ambele programe in paralel.
