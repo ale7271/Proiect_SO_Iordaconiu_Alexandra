@@ -4,7 +4,7 @@ typedef struct {
     int scor;
 }SCOR;
 #define MAX_INSPECTORI 100
-int main(inr argc,char *argv[]) {
+int main(int argc,char *argv[]) {
     if (argc<2) {
         printf("Trebuie introdus cel putin 1 district");
         exit(0);
@@ -22,7 +22,7 @@ int main(inr argc,char *argv[]) {
     while (read(fin,&buffer,sizeof(buffer))>0) {
         int ok=0;
         for (int i=0;i<n;i++) {
-            if (strcmp(v[i].nume,buffer.nume)==0) {
+            if (strcmp(v[i].nume,buffer.inspectorName)==0) {
                 v[i].scor=v[i].scor+buffer.severity;
                 ok=1;
                 break;
@@ -35,7 +35,7 @@ int main(inr argc,char *argv[]) {
             n++;
         }
     }
-    close(f);
+    close(fin);
     printf("Raport District: %s \n", argv[1]);
     for (int i=0;i<n;i++) {
         printf("Inspector: %s - scor total severitate: %d\n", v[i].nume, v[i].scor);

@@ -1,37 +1,5 @@
-#include <sys/stat.h>
-#include<unistd.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <time.h>
-#include<stdio.h>
-#include<sys/wait.h>
-#include<signal.h>
-#define NUME 50
-#define CATEGORIE 30
-#define DESCRIERE 100
-#define PATH 256
-#define LINK 200
-#define LOG 200
 
-typedef struct {
-    float latitude;
-    float longitude;
-}GPS;
-
-typedef struct {
-    int id;
-    char inspectorName[NUME];
-    GPS gps;
-    char category[CATEGORIE];
-    int severity;
-    time_t timestamp;
-    char description[DESCRIERE];
-}REPORT;
-
-
+#include "structura.h"
 void create(const char *district)
 {
     if (mkdir(district, 0750) == -1) {
@@ -232,7 +200,7 @@ void view(const char *district, int raport_id)
     REPORT r;
     int f;
     snprintf(path, sizeof(path),"%s/reports.dat",district);
-    f=open(path,O_RDWR);
+    f=open(path,O_RDONLY);
     if (f==-1)
     {
         perror("Eroare deschidere raports.dat la listare\n");
@@ -599,6 +567,7 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
         remove_district(district);
+
     }
     return 0;
 }
