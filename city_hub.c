@@ -2,8 +2,13 @@
 #define BUFFER 1024
 #define DISTRICT_MAX 10
 #define COMANDA 256
-pid_t pid_hub_mon;
+pid_t pid_hub_mon=-1;
 void start_monitor() {
+    if (pid_hub_mon > 0) {
+        printf("[city_hub] Exista deja un monitor pornit(PID %d).\n"
+               "Iesi din aplicatie (comanda 'exit') pentru a-l opri inainte de a reporni.\n", pid_hub_mon);
+        return;
+    }
     pid_t hub_mon=fork();
     pid_hub_mon=hub_mon;
     if (hub_mon<0) {
@@ -26,23 +31,40 @@ void start_monitor() {
             dup2(pipefd[1], STDOUT_FILENO);
             close(pipefd[1]);//inchidem capatul de scriere al monitorului
             execlp("./monitor_reports","monitor_reports",NULL);
-            perror("execlp monitor_reports failed");
+            const char *err = "[ERROR] execlp monitor_reports failed\n";
+            write(STDOUT_FILENO, err, strlen(err));
             exit(1);
         }
         close(pipefd[1]);//inchidem capatul de scriere al hub_mon
 
         char buffer[BUFFER];
         int citit;
+        int eroare=0;
         while ((citit=read(pipefd[0],buffer,BUFFER-1))>0) {
             buffer[citit]='\0';
-            printf("\n->%s",buffer);
+            if (strstr(buffer, "[ERROR]") != NULL) {
+                printf("\n %s", buffer);
+                eroare = 1; // Salvăm starea de eroare
+            } else if (strstr(buffer, "[OFF]") != NULL) {
+                printf("\n %s", buffer);
+            } else if (strstr(buffer, "[REPORT]") != NULL) {
+                printf("\n %s", buffer);
+            } else {
+                printf("\n %s", buffer);
+            }
             fflush(stdout);
         }
         close(pipefd[0]);
         waitpid(monitor_pid, NULL, 0);//pentru a nu ramane monitor_pid zombie
-        printf(".monitor_pid a fost inchis\n");
+        if (eroare == 1) {
+            printf("Executia monitorului a esuat.\n");
+        } else {
+            printf("Monitorul s-a inchis constrolat.\n");
+        }
         exit(0);
     }
+    pid_hub_mon = hub_mon;
+    printf("hub_mon pornit (PID %d).\n", hub_mon);
 }
 
 
@@ -61,11 +83,16 @@ void stop_monitor() {
     if (nr > 0) {
         pid_t pid = atoi(string_pid);
         // Trimitem SIGINT (semnalul pe care monitorul stie sa il gestioneze)
-        if (kill(pid, SIGINT) == 0) {
+        if (pid>0 && (kill(pid, SIGINT) == 0)) {
             printf("Semnal de oprire trimis catre monitor (PID: %d).\n", pid);
+            fflush(stdout);
         } else {
             perror("Eroare la oprirea monitorului");
         }
+    }
+    if (pid_hub_mon > 0) {
+        waitpid(pid_hub_mon, NULL, 0);
+        pid_hub_mon = -1; // Eliberam slotul, monitorul a murit complet
     }
 }
 
