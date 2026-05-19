@@ -1,6 +1,6 @@
 Phase 1
 -
-
+1. Instrumente folosite:
 Pentru aceasta etapa a proiectului, am folosit Gemini Pro(Google) 
 2. Prompturi pentru AI
 
@@ -37,7 +37,7 @@ Am invatat de ce AI-ul a facut cast la (time_t)atoll(value) pentru parsarea timp
 
 Phase 2
 -
-Instrument folosit:Gemini
+1. Instrument folosit:Gemini
 
 In această etapa am folosit AI-ul pentru asistenta la debugging, când incercam sa integrez procesul monitor_reports cu programul principal city_manager.
 
@@ -51,3 +51,18 @@ Am oferit AI-ului logica mea de cod și mesajele de eroare exacte primite în te
 
 4. Ce am modificat 
 Pentru a rula programul complet trebuie rulate ambele programe in paralel.
+
+Phase 3
+-
+1. Intrumente folosite: Gemini si Claude
+
+In acesta etapa am folosit AI pentru debugging dar si pentru integrarea corecta a city_hub in  proiect
+
+2. Utilizare
+
+Am cerut AI sa imi explice principiul de functionare al terminaului integrat din city_hub.
+
+3. Prompturi pentru AI
+
+I-am oferit AI cerinta pentru city_hub si i-am spus sa imi explice in termeni naturali ce pasi trebuie realizati pentru solutionarea cerintei.
+Dupa ce am scris codul conform indicatiilor i-am trimis varianta finala pentru validare si corectarea eventualelor greseli.
